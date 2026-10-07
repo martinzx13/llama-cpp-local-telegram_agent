@@ -123,25 +123,34 @@ cd ~/clinica-oriente-bot && cp .env.example .env
 docker compose up -d
 ```
 
-## Remote access (after clinic install)
+## Remote access — Option A (Tailscale inside WSL2)
+
+Use this to control the clinic PC remotely during the whole installation.
+
+```bash
+# 1. Inside WSL2 Ubuntu (after `wsl --install -d Ubuntu-22.04` and reboot)
+sudo apt update && sudo apt install -y curl
+curl -fsSL https://tailscale.com/install.sh | sh
+sudo tailscale up
+# → note the WSL2 Tailscale IP (e.g., 100.x.y.z)
+```
 
 ```powershell
-# On the clinic Windows PC:
-# 1. Install Tailscale for Windows (system tray app, sign in)
-# 2. Optional: enable OpenSSH Server (Settings > Optional Features)
+# 2. On the Windows host: install Tailscale for Windows (system tray),
+#    sign in with the same account
 ```
 
 ```bash
-# From your laptop (after signing into the same Tailscale account):
-ssh clinic-windows        # opens PowerShell on the clinic PC
-wsl                       # enter Ubuntu
+# 3. From your laptop (same Tailscale account):
+ssh user@100.x.y.z    # direct into WSL2 Ubuntu
 cd ~/clinica-oriente-bot
+docker compose up -d
 docker compose logs -f bot
-docker compose ps
 ```
 
-- Tailscale provides the encrypted tunnel; no router configuration needed.
-- If OpenSSH Server is blocked by the clinic firewall, restrict the SSH rule to the Tailscale interface.
+Why this: Docker runs in WSL2, so SSH lands you exactly where `docker compose` lives. No Windows `wsl` hop needed.
+
+Alternative: `ssh` to the **Windows** Tailscale IP (requires OpenSSH Server enabled on Windows), then `wsl` to enter Ubuntu.
 
 ## Model benchmark (Phase 0)
 ```bash
