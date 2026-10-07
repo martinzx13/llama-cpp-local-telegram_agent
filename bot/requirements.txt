@@ -1,0 +1,12 @@
+python-telegram-bot==21.4
+openai==1.35.0
+pyyaml==6.0.1
+bcrypt==4.2.0
+weasyprint==60.1
+qrcode==7.4.2
+python-dotenv==1.0.1
+requests==2.31.0
+sqlalchemy==2.0.23
+alembic==1.12.1
+pydantic==2.8.2
+pydantic-settings==2.3.3

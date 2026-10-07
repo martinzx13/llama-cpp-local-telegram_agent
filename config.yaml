@@ -1,0 +1,49 @@
+llm:
+  base_url: "http://llama-server:8080/v1"
+  model: "lfm2.5-8b-a1b"
+  timeout: 10
+  max_tokens: 512
+  temperature: 0.1
+
+routing:
+  local_first: true
+  local_timeout: 10
+  local_only:
+    - intent_parsing
+    - simple_qa
+    - greetings
+    - pin_verification
+  cloud_ok:
+    - document_drafting
+    - complex_queries
+    - clarification
+  cloud_priority:
+    - provider: "deepseek"
+      model: "v4-flash"
+      api_key_env: "DEEPSEEK_API_KEY"
+    - provider: "openai"
+      model: "gpt-5-nano"
+      api_key_env: "OPENAI_API_KEY"
+
+telegram:
+  th_group_id: -100XXXXXXXXXX
+  pin_attempts: 3
+  pin_cooldown_seconds: 300
+
+security:
+  whitelist_required: true
+  tiered_sensitivity:
+    basic: ["laboral", "tiempos"]
+    sensitive: ["salario"]
+
+database:
+  path: "/app/data/asistente_th.db"
+
+pdf:
+  qr_base_url: "https://oriente.local/verify"
+
+budget:
+  daily_usd:
+    deepseek: 0.10
+    openai: 0.05
+  alert_at_pct: 80

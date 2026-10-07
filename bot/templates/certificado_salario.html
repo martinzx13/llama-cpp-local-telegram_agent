@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; color: #333; }
+        .header { text-align: center; margin-bottom: 30px; }
+        h1 { color: #0B5FFF; margin: 10px 0; }
+        .cert-title { font-size: 24px; font-weight: bold; margin: 20px 0; text-transform: uppercase; }
+        .content { line-height: 1.8; font-size: 14px; }
+        .field { margin: 10px 0; }
+        .label { font-weight: bold; display: inline-block; width: 180px; }
+        .value { display: inline-block; }
+        .qr-section { text-align: right; margin-top: 40px; }
+        .qr-img { width: 100px; height: 100px; }
+        .footer { margin-top: 50px; font-size: 12px; color: #666; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>CLÍNICA DEL ORIENTE</h1>
+        <p>Corporación para la Salud Mental</p>
+        <p>La Ceja, Antioquia, Colombia</p>
+    </div>
+
+    <div class="cert-title">Certificado de Ingresos y Salario</div>
+
+    <div class="content">
+        <p>Por medio de la presente, <strong>CLÍNICA DEL ORIENTE</strong> certifica que:</p>
+        
+        <div class="field"><span class="label">Nombre:</span> <span class="value">{{ empleado.nombre }}</span></div>
+        <div class="field"><span class="label">Cédula:</span> <span class="value">{{ empleado.cedula }}</span></div>
+        <div class="field"><span class="label">Cargo:</span> <span class="value">{{ empleado.cargo }}</span></div>
+        <div class="field"><span class="label">Área:</span> <span class="value">{{ empleado.area }}</span></div>
+        <div class="field"><span class="label">Fecha de ingreso:</span> <span class="value">{{ empleado.fecha_ingreso.strftime('%d/%m/%Y') if empleado.fecha_ingreso else 'N/A' }}</span></div>
+
+        <p>Devenga un salario mensual de <strong>${{ salario_mensual|default:'[CONFIDENCIAL]' }} COP</strong>, 
+        correspondiente a su cargo y categoría profesional.</p>
+
+        <p>Incluye prestaciones sociales de ley: prima de servicios, cesantías, intereses de cesantías, 
+        vacaciones y seguridad social completa.</p>
+
+        <p>Se expide a solicitud del interesado para <strong>{{ destino }}</strong>.</p>
+        <p>Fecha de expedición: <strong>{{ fecha_emision }}</strong></p>
+    </div>
+
+    <div class="qr-section">
+        <img class="qr-img" src="data:image/png;base64,{{ qr_base64 }}" alt="QR Verificación">
+        <p style="font-size: 10px; margin-top: 5px;">Verificar en: {{ qr_url }}</p>
+    </div>
+
+    <div class="footer">
+        <p>Este certificado tiene validez legal conforme a la legislación laboral colombiana vigente.</p>
+        <p>Código de verificación: {{ qr_hash }}</p>
+        <p><em>Información salarial protegida bajo Ley 1581/2012 (Habeas Data)</em></p>
+    </div>
+</body>
+</html>

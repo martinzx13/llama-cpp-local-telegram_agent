@@ -1,0 +1,60 @@
+services:
+  llama-server:
+    image: ghcr.io/ggml-org/llama.cpp:server-cuda13
+    container_name: clinica-llama-server
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./models:/models
+      - ./config.yaml:/app/config.yaml
+    environment:
+      - LLAMA_ARG_MODEL=/models/active/model.gguf
+      - LLAMA_ARG_CTX_SIZE=8192
+      - LLAMA_ARG_N_GPU_LAYERS=99
+      - LLAMA_ARG_HOST=0.0.0.0
+      - LLAMA_ARG_PORT=8080
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  bot:
+    build: ./bot
+    container_name: clinica-bot
+    depends_on:
+      llama-server:
+        condition: service_healthy
+    volumes:
+      - ./data:/app/data
+      - ./config.yaml:/app/config.yaml
+      - ./logs:/app/logs
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - LLM_BASE_URL=http://llama-server:8080/v1
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  default:
+    name: clinica-network
